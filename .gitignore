@@ -6,6 +6,10 @@ __pycache__
 db.sqlite3
 media
 
+# Files for dev
+map
+pss
+
 # Backup files # 
 *.bak 
 
