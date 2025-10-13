@@ -31,7 +31,16 @@
     </select>
   </div>
   <div class="col-md-2">
-    <button type="submit" class="btn btn-primary w-100">Фильтровать</button>
+    <select name="sort" class="form-select">
+      <option value="">Без сортировки</option>
+      <option value="price_asc" {% if request.GET.sort == "price_asc" %}selected{% endif %}>Цена: по возрастанию</option>
+      <option value="price_desc" {% if request.GET.sort == "price_desc" %}selected{% endif %}>Цена: по убыванию</option>
+      <option value="newest" {% if request.GET.sort == "newest" %}selected{% endif %}>Сначала новые</option>
+      <option value="oldest" {% if request.GET.sort == "oldest" %}selected{% endif %}>Сначала старые</option>
+    </select>
+  </div>
+  <div class="col-md-1">
+    <button type="submit" class="btn btn-primary w-100">OK</button>
   </div>
 </form>
 
@@ -54,4 +63,39 @@
     <p>Нет доступных филаментов</p>
   {% endfor %}
 </div>
+
+<!-- Пагинация -->
+<nav aria-label="Навигация по страницам">
+  <ul class="pagination justify-content-center mt-4">
+    {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}
+        {% if request.GET.brand %}brand={{ request.GET.brand }}&{% endif %}
+        {% if request.GET.material %}material={{ request.GET.material }}&{% endif %}
+        {% if request.GET.color %}color={{ request.GET.color }}&{% endif %}
+        {% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}
+        page={{ page_obj.previous_page_number }}">Назад</a>
+      </li>
+    {% endif %}
+
+    {% for num in paginator.page_range %}
+      {% if page_obj.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+      {% endif %}
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}
+        {% if request.GET.brand %}brand={{ request.GET.brand }}&{% endif %}
+        {% if request.GET.material %}material={{ request.GET.material }}&{% endif %}
+        {% if request.GET.color %}color={{ request.GET.color }}&{% endif %}
+        {% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}
+        page={{ page_obj.next_page_number }}">Вперёд</a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
 {% endblock %}
