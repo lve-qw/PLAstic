@@ -1,6 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
 <h2 class="mb-4">Каталог филаментов</h2>
+
+<form method="get" class="row mb-4">
+  <div class="col-md-3">
+    <input type="text" name="q" class="form-control" placeholder="Поиск по описанию..." value="{{ request.GET.q }}">
+  </div>
+  <div class="col-md-2">
+    <select name="brand" class="form-select">
+      <option value="">Все бренды</option>
+      {% for b in brands %}
+        <option value="{{ b }}" {% if request.GET.brand == b %}selected{% endif %}>{{ b }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <select name="material" class="form-select">
+      <option value="">Все материалы</option>
+      {% for m in materials %}
+        <option value="{{ m }}" {% if request.GET.material == m %}selected{% endif %}>{{ m }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <select name="color" class="form-select">
+      <option value="">Все цвета</option>
+      {% for c in colors %}
+        <option value="{{ c }}" {% if request.GET.color == c %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2">
+    <button type="submit" class="btn btn-primary w-100">Фильтровать</button>
+  </div>
+</form>
+
 <div class="row">
   {% for filament in filaments %}
     <div class="col-md-4 mb-3">
