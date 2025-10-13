@@ -1,0 +1,46 @@
+filament_shop/                # Корневая папка проекта
+│
+├── manage.py                 # Точка входа для управления проектом
+├── requirements.txt          # Список зависимостей
+│
+├── filament_shop/            # Конфигурация проекта
+│   ├── __init__.py
+│   ├── settings.py           # Основные настройки Django
+│   ├── urls.py               # Глобальные маршруты
+│   ├── wsgi.py
+│   └── asgi.py
+│
+├── core/                     # Базовое приложение (домашняя страница и общие шаблоны)
+│   ├── templates/core/       # Шаблоны для core
+│   │   └── home.html
+│   ├── views.py
+│   ├── urls.py
+│   ├── apps.py
+│   └── ...
+│
+├── accounts/                 # Регистрация, авторизация, личный кабинет
+│   ├── templates/accounts/   # Шаблоны для аккаунтов
+│   │   ├── login.html
+│   │   ├── register.html
+│   │   └── profile.html
+│   ├── forms.py              # Кастомные формы регистрации
+│   ├── views.py
+│   ├── urls.py
+│   ├── models.py             # (если нужно расширять User)
+│   └── ...
+│
+├── catalog/                  # Каталог филаментов
+│   ├── templates/catalog/    # Шаблоны каталога
+│   │   ├── filament_list.html
+│   │   └── filament_detail.html
+│   ├── models.py             # Модель Filament
+│   ├── views.py
+│   ├── urls.py
+│   └── ...
+│
+├── static/                   # Статические файлы (CSS, изображения)
+│   └── css/
+│       └── style.css
+│
+└── templates/                # Общие шаблоны
+    └── base.html             # Базовый шаблон с header/footer

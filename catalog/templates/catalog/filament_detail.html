@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  {% if filament.image %}
+    <img src="{{ filament.image.url }}" class="card-img-top" alt="{{ filament.brand }}">
+  {% endif %}
+  <div class="card-body">
+    <h2>{{ filament.brand }} {{ filament.material }}</h2>
+    <p><strong>Цвет:</strong> {{ filament.color }}</p>
+    <p><strong>Диаметр:</strong> {{ filament.diameter }} мм</p>
+    <p><strong>Вес:</strong> {{ filament.weight }} г</p>
+    <p><strong>Цена:</strong> {{ filament.price }} ₽</p>
+    <p><strong>Остаток:</strong> {{ filament.stock }}</p>
+    <p>{{ filament.description }}</p>
+  </div>
+</div>
+{% endblock %}

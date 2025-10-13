@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Каталог филаментов</h2>
+<div class="row">
+  {% for filament in filaments %}
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        {% if filament.image %}
+          <img src="{{ filament.image.url }}" class="card-img-top" alt="{{ filament.brand }}">
+        {% endif %}
+        <div class="card-body">
+          <h5 class="card-title">{{ filament.brand }} {{ filament.material }}</h5>
+          <p class="card-text">Цвет: {{ filament.color }}</p>
+          <p class="card-text">Цена: {{ filament.price }} ₽</p>
+          <a href="{% url 'catalog:detail' filament.pk %}" class="btn btn-primary">Подробнее</a>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p>Нет доступных филаментов</p>
+  {% endfor %}
+</div>
+{% endblock %}
