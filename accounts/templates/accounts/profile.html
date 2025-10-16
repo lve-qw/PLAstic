@@ -31,4 +31,24 @@
   {{ device_form.as_p }}
   <button type="submit" name="add_device" class="btn btn-success">Привязать устройство</button>
 </form>
+
+
+<h4 class="mt-4">История заказов</h4>
+<ul>
+  {% for order in orders %}
+    <li>
+      Заказ №{{ order.id }} от {{ order.created_at|date:"d.m.Y H:i" }} —
+      Статус: {{ order.get_status_display }}
+      <ul>
+        {% for item in order.items.all %}
+          <li>{{ item.filament.brand }} {{ item.filament.material }} — {{ item.quantity }} шт. ({{ item.get_total }} ₽)</li>
+        {% endfor %}
+      </ul>
+      <strong>Итого:</strong> {{ order.get_total_price }} ₽
+    </li>
+  {% empty %}
+    <li>У вас пока нет заказов.</li>
+  {% endfor %}
+</ul>
+
 {% endblock %}
