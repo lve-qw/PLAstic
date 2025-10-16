@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Оформление заказа</h2>
+<p><strong>Имя:</strong> {{ user.username }}</p>
+<p><strong>Email:</strong> {{ user.email }}</p>
+<p><strong>Телефон:</strong> {{ user.profile.phone }}</p>
+<p><strong>Адрес:</strong> {{ user.profile.address }}</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-success">Подтвердить заказ</button>
+</form>
+
+<h4 class="mt-4">Ваш заказ:</h4>
+<ul>
+  {% for item in cart %}
+    <li>{{ item.filament.brand }} {{ item.filament.material }} — {{ item.quantity }} шт. ({{ item.total_price }} ₽)</li>
+  {% endfor %}
+</ul>
+<p><strong>Итого:</strong> {{ cart.get_total_price }} ₽</p>
+{% endblock %}

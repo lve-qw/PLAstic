@@ -30,5 +30,5 @@
 
 <h4>Итого: {{ cart.get_total_price }} ₽</h4>
 
-<a href="#" class="btn btn-success">Оформить заказ</a>
+<a href="{% url 'orders:create' %}" class="btn btn-success">Оформить заказ</a>
 {% endblock %}

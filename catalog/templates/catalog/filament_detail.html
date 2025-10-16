@@ -5,6 +5,7 @@
     <img src="{{ filament.image.url }}" class="card-img-top" alt="{{ filament.brand }}">
   {% endif %}
   <div class="card-body">
+    <a href="{% url 'cart:add' filament.id %}" class="btn btn-success">Добавить в корзину</a>
     <h2>{{ filament.brand }} {{ filament.material }}</h2>
     <p><strong>Цвет:</strong> {{ filament.color }}</p>
     <p><strong>Диаметр:</strong> {{ filament.diameter }} мм</p>
