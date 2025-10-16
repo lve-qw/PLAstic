@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import UserProfile
+from .models import Device
 
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -27,3 +28,15 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ["phone", "address"]
+
+
+class DeviceForm(forms.ModelForm):
+    class Meta:
+        model = Device
+        fields = ["device_id"]
+
+    def clean_device_id(self):
+        device_id = self.cleaned_data["device_id"]
+        if len(device_id) != 16:
+            raise forms.ValidationError("ID устройства должен быть длиной ровно 16 символов.")
+        return device_id
