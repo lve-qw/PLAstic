@@ -15,6 +15,7 @@
 <ul>
   {% for device in devices %}
     <li>{{ device.device_id }} (добавлено {{ device.created_at|date:"d.m.Y H:i" }})</li>
+    <li>{{ device. }}</li>
     <a href="{% url 'accounts:delete_device' device.id %}" 
          class="btn btn-danger btn-sm"
          onclick="return confirm('Удалить это устройство?');">
@@ -40,7 +41,7 @@
       Заказ №{{ order.id }} от {{ order.created_at|date:"d.m.Y H:i" }} —
       Статус: {{ order.get_status_display }}
       <ul>
-        {% for item in order.items.all %}
+        {% for item in orders.items.all %}
           <li>{{ item.filament.brand }} {{ item.filament.material }} — {{ item.quantity }} шт. ({{ item.get_total }} ₽)</li>
         {% endfor %}
       </ul>
