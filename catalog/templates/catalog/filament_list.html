@@ -1,101 +1,721 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}Каталог филаментов - FilamentStore{% endblock %}
+{% block meta_description %}ECO Филамент для 3D-печати PLA по доступным ценам.{% endblock %}
+
 {% block content %}
-<h2 class="mb-4">Каталог филаментов</h2>
-
-<form method="get" class="row mb-4">
-  <div class="col-md-3">
-    <input type="text" name="q" class="form-control" placeholder="Поиск по описанию..." value="{{ request.GET.q }}">
-  </div>
-  <div class="col-md-2">
-    <select name="brand" class="form-select">
-      <option value="">Все бренды</option>
-      {% for b in brands %}
-        <option value="{{ b }}" {% if request.GET.brand == b %}selected{% endif %}>{{ b }}</option>
-      {% endfor %}
-    </select>
-  </div>
-  <div class="col-md-2">
-    <select name="material" class="form-select">
-      <option value="">Все материалы</option>
-      {% for m in materials %}
-        <option value="{{ m }}" {% if request.GET.material == m %}selected{% endif %}>{{ m }}</option>
-      {% endfor %}
-    </select>
-  </div>
-  <div class="col-md-2">
-    <select name="color" class="form-select">
-      <option value="">Все цвета</option>
-      {% for c in colors %}
-        <option value="{{ c }}" {% if request.GET.color == c %}selected{% endif %}>{{ c }}</option>
-      {% endfor %}
-    </select>
-  </div>
-  <div class="col-md-2">
-    <select name="sort" class="form-select">
-      <option value="">Без сортировки</option>
-      <option value="price_asc" {% if request.GET.sort == "price_asc" %}selected{% endif %}>Цена: по возрастанию</option>
-      <option value="price_desc" {% if request.GET.sort == "price_desc" %}selected{% endif %}>Цена: по убыванию</option>
-      <option value="newest" {% if request.GET.sort == "newest" %}selected{% endif %}>Сначала новые</option>
-      <option value="oldest" {% if request.GET.sort == "oldest" %}selected{% endif %}>Сначала старые</option>
-    </select>
-  </div>
-  <div class="col-md-1">
-    <button type="submit" class="btn btn-primary w-100">OK</button>
-  </div>
-</form>
-
-<div class="row">
-  {% for filament in filaments %}
-    <div class="col-md-4 mb-3">
-      <div class="card h-100">
-        {% if filament.image %}
-          <img src="{{ filament.image.url }}" class="card-img-top" alt="{{ filament.brand }}">
-        {% endif %}
-        <div class="card-body">
-          <h5 class="card-title">{{ filament.brand }} {{ filament.material }}</h5>
-          <p class="card-text">Цвет: {{ filament.color }}</p>
-          <p class="card-text">Цена: {{ filament.price }} ₽</p>
-          <a href="{% url 'catalog:detail' filament.pk %}" class="btn btn-primary">Подробнее</a>
+<div class="catalog-header">
+    <div class="container">
+        <div class="catalog-header__content">
+            <h1 class="catalog-header__title">Каталог филаментов</h1>
         </div>
-      </div>
     </div>
-  {% empty %}
-    <p>Нет доступных филаментов</p>
-  {% endfor %}
 </div>
 
-<!-- Пагинация -->
-<nav aria-label="Навигация по страницам">
-  <ul class="pagination justify-content-center mt-4">
-    {% if page_obj.has_previous %}
-      <li class="page-item">
-        <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}
-        {% if request.GET.brand %}brand={{ request.GET.brand }}&{% endif %}
-        {% if request.GET.material %}material={{ request.GET.material }}&{% endif %}
-        {% if request.GET.color %}color={{ request.GET.color }}&{% endif %}
-        {% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}
-        page={{ page_obj.previous_page_number }}">Назад</a>
-      </li>
-    {% endif %}
+<div class="catalog-layout">
+    <div class="container">
+        <!-- Horizontal Filters -->
+        <div class="catalog-filters-horizontal">
+            <form method="get" class="filters-form" id="filterForm">
+                <div class="filters-row">
+                    <!-- Search -->
+                    <div class="filter-field">
+                        <div class="filter-input-wrapper">
+                            <input type="text" 
+                                   name="q" 
+                                   class="filter-input" 
+                                   placeholder="Поиск..." 
+                                   value="{{ request.GET.q }}">
+                            <svg class="filter-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                            </svg>
+                        </div>
+                    </div>
 
-    {% for num in paginator.page_range %}
-      {% if page_obj.number == num %}
-        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-      {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-        <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-      {% endif %}
-    {% endfor %}
+                    <!-- Brand filter -->
+                    <div class="filter-field">
+                        <select name="brand" class="filter-select">
+                            <option value="">Все бренды</option>
+                            {% for b in brands %}
+                            <option value="{{ b }}" {% if request.GET.brand == b %}selected{% endif %}>{{ b }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
 
-    {% if page_obj.has_next %}
-      <li class="page-item">
-        <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}
-        {% if request.GET.brand %}brand={{ request.GET.brand }}&{% endif %}
-        {% if request.GET.material %}material={{ request.GET.material }}&{% endif %}
-        {% if request.GET.color %}color={{ request.GET.color }}&{% endif %}
-        {% if request.GET.sort %}sort={{ request.GET.sort }}&{% endif %}
-        page={{ page_obj.next_page_number }}">Вперёд</a>
-      </li>
-    {% endif %}
-  </ul>
-</nav>
+                    <!-- Material filter -->
+                    <div class="filter-field">
+                        <select name="material" class="filter-select">
+                            <option value="">Все материалы</option>
+                            {% for m in materials %}
+                            <option value="{{ m }}" {% if request.GET.material == m %}selected{% endif %}>{{ m }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Color filter -->
+                    <div class="filter-field">
+                        <select name="color" class="filter-select">
+                            <option value="">Все цвета</option>
+                            {% for c in colors %}
+                            <option value="{{ c }}" {% if request.GET.color == c %}selected{% endif %}>{{ c }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Sort -->
+                    <div class="filter-field">
+                        <select name="sort" class="filter-select">
+                            <option value="">Сортировка</option>
+                            <option value="price_asc" {% if request.GET.sort == "price_asc" %}selected{% endif %}>Цена ↑</option>
+                            <option value="price_desc" {% if request.GET.sort == "price_desc" %}selected{% endif %}>Цена ↓</option>
+                            <option value="newest" {% if request.GET.sort == "newest" %}selected{% endif %}>Новые</option>
+                            <option value="oldest" {% if request.GET.sort == "oldest" %}selected{% endif %}>Старые</option>
+                        </select>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="filter-actions">
+                        <button type="submit" class="btn btn--primary btn--small">
+                            Применить
+                        </button>
+                        <a href="{% url 'catalog:list' %}" class="btn btn--outline btn--small">
+                            Сбросить
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Header -->
+        <div class="catalog-results-header">
+            <div class="results-info">
+                <span class="results-count">
+                    Найдено: <strong>{{ page_obj.paginator.count }}</strong> товаров
+                </span>
+            </div>
+            <div class="view-options">
+                <button class="view-btn active" data-view="grid" title="Сетка">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
+                        <path d="M1 1h6v6H1V1zm0 8h6v6H1V9zm8-8h6v6H9V1zm0 8h6v6H9V9z"/>
+                    </svg>
+                </button>
+                <button class="view-btn" data-view="list" title="Список">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
+                        <path d="M1 1h16v2H1V1zm0 4h16v2H1V5zm0 4h16v2H1V9zm0 4h16v2H1v-2z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid products-grid--grid" id="productsView">
+            {% for filament in filaments %}
+            <div class="product-card">
+                <div class="product-card__image">
+                    {% if filament.image %}
+                        <img src="{{ filament.image.url }}" alt="{{ filament.brand }} {{ filament.material }}" loading="lazy">
+                    {% else %}
+                        <div class="product-card__image-placeholder">
+                            <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                            </svg>
+                        </div>
+                    {% endif %}
+                    
+                    {% if filament.is_new %}
+                    <span class="product-card__badge">Новинка</span>
+                    {% endif %}
+                </div>
+                
+                <div class="product-card__content">
+                    <div class="product-card__header">
+                        <h3 class="product-card__title">{{ filament.brand }}</h3>
+                        <span class="product-card__material">{{ filament.material }}</span>
+                    </div>
+                    
+                    <div class="product-card__color">
+                        <span class="color-sample" style="background-color: {{ filament.color_hex|default:'#666' }};"></span>
+                        {{ filament.color }}
+                    </div>
+                    
+                    {% if filament.description %}
+                    <p class="product-card__description">
+                        {{ filament.description|truncatewords:12 }}
+                    </p>
+                    {% endif %}
+                    
+                    <div class="product-card__footer">
+                        <div class="product-card__price">
+                            <span class="price-current">{{ filament.price }} ₽</span>
+                            {% if filament.old_price %}
+                            <span class="price-old">{{ filament.old_price }} ₽</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-card__actions">
+                            <a href="{% url 'catalog:detail' filament.pk %}" class="btn btn--primary btn--small">
+                                Подробнее
+                            </a>
+                            <button class="btn btn--outline btn--small btn--icon" title="В избранное">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M8 1.5l1.5 3 3.5.5-2.5 2.5.5 3.5-3-1.5-3 1.5.5-3.5L3 5l3.5-.5L8 1.5z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="catalog-empty">
+                <div class="empty-icon">🎯</div>
+                <h3 class="empty-title">Товары не найдены</h3>
+                <p class="empty-text">Попробуйте изменить параметры фильтрации</p>
+                <a href="{% url 'catalog:list' %}" class="btn btn--primary">Сбросить фильтры</a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+               class="pagination-link pagination-prev">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" clip-rule="evenodd"/>
+                </svg>
+                Назад
+            </a>
+            {% endif %}
+
+            <div class="pagination-pages">
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <span class="pagination-page pagination-active">{{ num }}</span>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+                       class="pagination-page">{{ num }}</a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+               class="pagination-link pagination-next">
+                Вперед
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z" clip-rule="evenodd"/>
+                </svg>
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+/* Horizontal Filters Styles */
+.catalog-filters-horizontal {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e5e7eb;
+}
+
+.filters-form {
+    width: 100%;
+}
+
+.filters-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-field {
+    flex: 1;
+    min-width: 150px;
+}
+
+.filter-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.filter-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.filter-icon {
+    position: absolute;
+    left: 0.75rem;
+    color: #6b7280;
+    width: 16px;
+    height: 16px;
+}
+
+.filter-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 2.5rem;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* Results Header */
+.catalog-results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.results-count {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.results-count strong {
+    color: #1f2937;
+}
+
+.view-options {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.view-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 6px;
+    background: white;
+    color: #6b7280;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-btn:hover {
+    border-color: #6366f1;
+    color: #6366f1;
+}
+
+.view-btn.active {
+    border-color: #6366f1;
+    background: #6366f1;
+    color: white;
+}
+
+/* Products Grid */
+.products-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    margin-bottom: 3rem;
+}
+
+.products-grid--list {
+    grid-template-columns: 1fr;
+}
+
+.products-grid--list .product-card {
+    display: grid;
+    grid-template-columns: 120px 1fr auto;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.products-grid--list .product-card__image {
+    margin-bottom: 0;
+    height: 100px;
+}
+
+.products-grid--list .product-card__image img {
+    height: 100%;
+    object-fit: cover;
+}
+
+.products-grid--list .product-card__content {
+    text-align: left;
+}
+
+.products-grid--list .product-card__footer {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-end;
+}
+
+/* Product Card */
+.product-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #f3f4f6;
+    transition: all 0.3s ease;
+}
+
+.product-card:hover {
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+.product-card__image {
+    position: relative;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f9fafb;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-card__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.product-card__image-placeholder {
+    color: #d1d5db;
+}
+
+.product-card__badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: #f59e0b;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.product-card__header {
+    margin-bottom: 0.75rem;
+}
+
+.product-card__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.25rem 0;
+}
+
+.product-card__material {
+    font-size: 0.875rem;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.product-card__color {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.color-sample {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    border: 2px solid #e5e7eb;
+}
+
+.product-card__description {
+    color: #6b7280;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.product-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.product-card__price {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.price-current {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.price-old {
+    font-size: 0.875rem;
+    color: #6b7280;
+    text-decoration: line-through;
+}
+
+.product-card__actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.btn--primary {
+    background: #6366f1;
+    color: white;
+}
+
+.btn--primary:hover {
+    background: #4f46e5;
+    transform: translateY(-1px);
+}
+
+.btn--outline {
+    background: transparent;
+    color: #6366f1;
+    border: 2px solid #6366f1;
+}
+
+.btn--outline:hover {
+    background: #6366f1;
+    color: white;
+}
+
+.btn--small {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+}
+
+.btn--icon {
+    padding: 0.5rem;
+}
+
+/* Empty State */
+.catalog-empty {
+    text-align: center;
+    padding: 3rem 2rem;
+    grid-column: 1 / -1;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.empty-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #1f2937;
+}
+
+.empty-text {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 3rem;
+}
+
+.pagination-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    color: #1f2937;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.pagination-link:hover {
+    border-color: #6366f1;
+    color: #6366f1;
+}
+
+.pagination-pages {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.pagination-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    color: #1f2937;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.pagination-page:hover {
+    border-color: #e5e7eb;
+}
+
+.pagination-active {
+    background: #6366f1;
+    color: white;
+    border-color: #6366f1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .filters-row {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .filter-field {
+        min-width: 100%;
+    }
+    
+    .filter-actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+    
+    .filter-actions .btn {
+        flex: 1;
+    }
+    
+    .products-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .catalog-results-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .products-grid--list .product-card {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+// View toggle functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const viewBtns = document.querySelectorAll('.view-btn');
+    const productsView = document.getElementById('productsView');
+    
+    viewBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const viewType = this.dataset.view;
+            
+            // Update active state
+            viewBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Update view
+            productsView.className = `products-grid products-grid--${viewType}`;
+            
+            // Save preference
+            localStorage.setItem('preferredView', viewType);
+        });
+    });
+    
+    // Load saved view preference
+    const savedView = localStorage.getItem('preferredView') || 'grid';
+    const savedBtn = document.querySelector(`[data-view="${savedView}"]`);
+    if (savedBtn) {
+        savedBtn.click();
+    }
+    
+    // Auto-submit form when filters change
+    document.querySelectorAll('.filter-select').forEach(select => {
+        select.addEventListener('change', function() {
+            document.getElementById('filterForm').submit();
+        });
+    });
+    
+    // Debounced search
+    let searchTimer;
+    const searchInput = document.querySelector('.filter-input');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimer);
+            searchTimer = setTimeout(() => {
+                document.getElementById('filterForm').submit();
+            }, 500);
+        });
+    }
+});
+</script>
 {% endblock %}

@@ -1,21 +1,1023 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}Оформление заказа - FilamentStore{% endblock %}
+{% block meta_description %}Подтверждение и оформление заказа филаментов для 3D-печати. Проверьте данные и подтвердите заказ.{% endblock %}
+
 {% block content %}
-<h2>Оформление заказа</h2>
-<p><strong>Имя:</strong> {{ user.username }}</p>
-<p><strong>Email:</strong> {{ user.email }}</p>
-<p><strong>Телефон:</strong> {{ user.profile.phone }}</p>
-<p><strong>Адрес:</strong> {{ user.profile.address }}</p>
+<div class="checkout-page">
+    <div class="container">
+        <!-- Хлебные крошки -->
+        <nav class="breadcrumb">
+            <a href="{% url 'core:home' %}" class="breadcrumb__link">Главная</a>
+            <span class="breadcrumb__separator">/</span>
+            <a href="{% url 'catalog:list' %}" class="breadcrumb__link">Каталог</a>
+            <span class="breadcrumb__separator">/</span>
+            <a href="{% url 'cart:detail' %}" class="breadcrumb__link">Корзина</a>
+            <span class="breadcrumb__separator">/</span>
+            <span class="breadcrumb__current">Оформление заказа</span>
+        </nav>
 
-<form method="post">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-success">Подтвердить заказ</button>
-</form>
+        <div class="checkout-header">
+            <h1 class="checkout-title">Оформление заказа</h1>
+            <p class="checkout-subtitle">Проверьте информацию и подтвердите ваш заказ</p>
+        </div>
 
-<h4 class="mt-4">Ваш заказ:</h4>
-<ul>
-  {% for item in cart %}
-    <li>{{ item.filament.brand }} {{ item.filament.material }} — {{ item.quantity }} шт. ({{ item.total_price }} ₽)</li>
-  {% endfor %}
-</ul>
-<p><strong>Итого:</strong> {{ cart.get_total_price }} ₽</p>
+        <div class="checkout-layout">
+            <!-- Основная информация -->
+            <div class="checkout-main">
+                <!-- Данные покупателя -->
+                <div class="checkout-card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                            Данные покупателя
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="customer-info">
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <span class="info-label">Имя:</span>
+                                    <span class="info-value">{{ user.get_full_name|default:user.username }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Email:</span>
+                                    <span class="info-value">{{ user.email }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Телефон:</span>
+                                    <span class="info-value">{{ user.profile.phone|default:"Не указан" }}</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Адрес доставки:</span>
+                                    <span class="info-value">{{ user.profile.address|default:"Не указан" }}</span>
+                                </div>
+                            </div>
+                            <a href="{% url 'accounts:profile' %}" class="edit-link">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5L13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175l-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+                                </svg>
+                                Изменить данные
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Способ доставки -->
+                <div class="checkout-card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                            </svg>
+                            Способ доставки
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="delivery-options">
+                            <label class="delivery-option">
+                                <input type="radio" name="delivery" value="courier" checked class="delivery-radio">
+                                <div class="delivery-content">
+                                    <div class="delivery-info">
+                                        <span class="delivery-name">Курьерская доставка</span>
+                                        <span class="delivery-time">1-3 рабочих дня</span>
+                                    </div>
+                                    <span class="delivery-price">300 ₽</span>
+                                </div>
+                            </label>
+                            
+                            <label class="delivery-option">
+                                <input type="radio" name="delivery" value="pickup" class="delivery-radio">
+                                <div class="delivery-content">
+                                    <div class="delivery-info">
+                                        <span class="delivery-name">Самовывоз</span>
+                                        <span class="delivery-time">Сегодня или завтра</span>
+                                    </div>
+                                    <span class="delivery-price">Бесплатно</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Способ оплаты -->
+                <div class="checkout-card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+                            </svg>
+                            Способ оплаты
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="payment-options">
+                            <label class="payment-option">
+                                <input type="radio" name="payment" value="card" checked class="payment-radio">
+                                <div class="payment-content">
+                                    <div class="payment-icon">💳</div>
+                                    <span class="payment-name">Банковская карта</span>
+                                </div>
+                            </label>
+                            
+                            <label class="payment-option">
+                                <input type="radio" name="payment" value="cash" class="payment-radio">
+                                <div class="payment-content">
+                                    <div class="payment-icon">💵</div>
+                                    <span class="payment-name">Наличные при получении</span>
+                                </div>
+                            </label>
+                            
+                            <label class="payment-option">
+                                <input type="radio" name="payment" value="online" class="payment-radio">
+                                <div class="payment-content">
+                                    <div class="payment-icon">🌐</div>
+                                    <span class="payment-name">Онлайн-кошелек</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Боковая панель с итогами -->
+            <aside class="checkout-sidebar">
+                <div class="order-summary">
+                    <div class="summary-header">
+                        <h3 class="summary-title">Ваш заказ</h3>
+                    </div>
+
+                    <div class="order-items">
+                        {% for item in cart %}
+                        <div class="order-item">
+                            <div class="item-image">
+                                {% if item.filament.image %}
+                                <img src="{{ item.filament.image.url }}" alt="{{ item.filament.brand }}">
+                                {% else %}
+                                <div class="item-image-placeholder">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                    </svg>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="item-details">
+                                <h4 class="item-name">{{ item.filament.brand }} {{ item.filament.material }}</h4>
+                                <span class="item-color">{{ item.filament.color }}</span>
+                                <span class="item-quantity">Количество: {{ item.quantity }} шт.</span>
+                            </div>
+                            <div class="item-price">{{ item.total_price }} ₽</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="summary-totals">
+                        <div class="total-row">
+                            <span class="total-label">Товары ({{ cart|length }})</span>
+                            <span class="total-value">{{ cart.get_total_price }} ₽</span>
+                        </div>
+                        <div class="total-row">
+                            <span class="total-label">Доставка</span>
+                            <span class="total-value" id="deliveryCost">300 ₽</span>
+                        </div>
+                        <div class="total-row grand-total">
+                            <span class="total-label">Итого к оплате</span>
+                            <span class="total-value">{{ cart.get_total_price }} ₽</span>
+                        </div>
+                    </div>
+
+                    <form method="post" class="order-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="delivery_method" id="deliveryMethod" value="courier">
+                        <input type="hidden" name="payment_method" id="paymentMethod" value="card">
+                        
+                        <button type="submit" class="btn btn--primary btn--large btn--full confirm-btn">
+                            <span class="btn-text">Подтвердить заказ</span>
+                            <div class="btn-loader" style="display: none;">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M10 3a7 7 0 100 14 7 7 0 000-14zM2 10a8 8 0 1116 0 8 8 0 01-16 0z" opacity="0.2"/>
+                                    <path d="M10 3a7 7 0 017 7h-2a5 5 0 00-5-5V3z"/>
+                                </svg>
+                            </div>
+                        </button>
+                    </form>
+
+                    <div class="security-badges">
+                        <div class="security-badge">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 0a8 8 0 100 16A8 8 0 008 0zm0 14A6 6 0 118 2a6 6 0 010 12z" clip-rule="evenodd"/>
+                                <path fill-rule="evenodd" d="M10.5 6.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Безопасная оплата
+                        </div>
+                        <div class="security-badge">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 16A8 8 0 108 0a8 8 0 000 16zm.707-10.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L7.414 9H12a1 1 0 100-2H7.414l1.293-1.293z" clip-rule="evenodd"/>
+                            </svg>
+                            Гарантия возврата
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+
+<style>
+.checkout-page {
+    padding: 2rem 0;
+    min-height: 80vh;
+    background: #f8fafc;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.breadcrumb__link {
+    color: #6366f1;
+    text-decoration: none;
+}
+
+.breadcrumb__link:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb__separator {
+    color: #d1d5db;
+}
+
+.breadcrumb__current {
+    color: #374151;
+    font-weight: 500;
+}
+
+.checkout-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.checkout-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.checkout-subtitle {
+    font-size: 1.125rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.checkout-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+    .checkout-layout {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+/* Cards */
+.checkout-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e5e7eb;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.card-title svg {
+    color: #6366f1;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+/* Customer Info */
+.customer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .info-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.info-label {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.info-value {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.edit-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+}
+
+.edit-link:hover {
+    text-decoration: underline;
+}
+
+/* Delivery Options */
+.delivery-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.delivery-option {
+    display: block;
+    cursor: pointer;
+}
+
+.delivery-radio {
+    display: none;
+}
+
+.delivery-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.delivery-radio:checked + .delivery-content {
+    border-color: #6366f1;
+    background: #f0f9ff;
+}
+
+.delivery-option:hover .delivery-content {
+    border-color: #9ca3af;
+}
+
+.delivery-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.delivery-name {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.delivery-time {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.delivery-price {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1.125rem;
+}
+
+/* Payment Options */
+.payment-options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .payment-options {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.payment-option {
+    display: block;
+    cursor: pointer;
+}
+
+.payment-radio {
+    display: none;
+}
+
+.payment-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.5rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.payment-radio:checked + .payment-content {
+    border-color: #6366f1;
+    background: #f0f9ff;
+}
+
+.payment-option:hover .payment-content {
+    border-color: #9ca3af;
+}
+
+.payment-icon {
+    font-size: 2rem;
+}
+
+.payment-name {
+    font-weight: 500;
+    color: #1f2937;
+}
+
+/* Order Summary */
+.order-summary {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e5e7eb;
+    position: sticky;
+    top: 2rem;
+}
+
+.summary-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.summary-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.order-items {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.order-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.order-item:not(:last-child) {
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.item-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f9fafb;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.item-image-placeholder {
+    color: #d1d5db;
+}
+
+.item-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.item-name {
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    font-size: 0.875rem;
+}
+
+.item-color {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.item-quantity {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.item-price {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.summary-totals {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.total-label {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.total-value {
+    font-weight: 500;
+    color: #1f2937;
+}
+
+.total-row.discount {
+    color: #10b981;
+}
+
+.total-row.discount .total-value {
+    color: #10b981;
+}
+
+.total-row.grand-total {
+    border-top: 1px solid #e5e7eb;
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+}
+
+.total-row.grand-total .total-label {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1.125rem;
+}
+
+.total-row.grand-total .total-value {
+    font-weight: 700;
+    color: #6366f1;
+    font-size: 1.25rem;
+}
+
+/* Order Form */
+.order-form {
+    padding: 1.5rem 2rem;
+}
+
+.confirm-btn {
+    margin-bottom: 1rem;
+}
+
+.order-note {
+    font-size: 0.75rem;
+    color: #6b7280;
+    text-align: center;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.link {
+    color: #6366f1;
+    text-decoration: none;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+.security-badges {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 1rem 2rem;
+    border-top: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.security-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.security-badge svg {
+    color: #10b981;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    font-size: 1rem;
+    position: relative;
+}
+
+.btn--primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+.btn--large {
+    padding: 1.125rem 2rem;
+    font-size: 1.125rem;
+}
+
+.btn--full {
+    width: 100%;
+}
+
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn-loader {
+    display: none;
+}
+
+.btn.loading .btn-text {
+    opacity: 0;
+}
+
+.btn.loading .btn-loader {
+    display: block;
+    animation: spin 1s linear infinite;
+}
+
+/* Animations */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .checkout-header {
+        margin-bottom: 2rem;
+    }
+    
+    .checkout-title {
+        font-size: 2rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+    
+    .order-items {
+        padding: 1rem 1.5rem;
+    }
+    
+    .summary-totals,
+    .order-form {
+        padding: 1rem 1.5rem;
+    }
+    
+    .security-badges {
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .payment-options {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Элементы для расчета доставки
+    const deliveryRadios = document.querySelectorAll('input[name="delivery"]');
+    const deliveryCostElement = document.getElementById('deliveryCost');
+    const grandTotalElement = document.getElementById('grandTotal');
+    const deliveryMethodInput = document.getElementById('deliveryMethod');
+    const paymentMethodInput = document.getElementById('paymentMethod');
+    
+    // Стоимости доставки
+    const deliveryCosts = {
+        courier: 300,
+        pickup: 0
+    };
+    
+    // Базовая стоимость товаров (из данных Django)
+    const baseTotal = {{ cart.get_total_price }};
+    
+    // Обновление итоговой стоимости
+    function updateTotals() {
+        const selectedDelivery = document.querySelector('input[name="delivery"]:checked').value;
+        const deliveryCost = deliveryCosts[selectedDelivery];
+        const discount = {{ cart.get_discount|default:0 }};
+        const finalTotal = baseTotal + deliveryCost - discount;
+        
+        // Обновляем отображение
+        deliveryCostElement.textContent = deliveryCost === 0 ? 'Бесплатно' : deliveryCost + ' ₽';
+        grandTotalElement.textContent = finalTotal + ' ₽';
+        
+        // Сохраняем выбранные методы в скрытые поля
+        deliveryMethodInput.value = selectedDelivery;
+        paymentMethodInput.value = document.querySelector('input[name="payment"]:checked').value;
+    }
+    
+    // Обработчики изменения способа доставки
+    deliveryRadios.forEach(radio => {
+        radio.addEventListener('change', updateTotals);
+    });
+    
+    // Обработчики изменения способа оплаты
+    const paymentRadios = document.querySelectorAll('input[name="payment"]');
+    paymentRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            paymentMethodInput.value = this.value;
+        });
+    });
+    
+    // Валидация формы перед отправкой
+    const orderForm = document.querySelector('.order-form');
+    const confirmBtn = orderForm.querySelector('.confirm-btn');
+    
+    orderForm.addEventListener('submit', function(e) {
+        // Проверяем, заполнены ли необходимые данные профиля
+        const phone = '{{ user.profile.phone|default:"" }}';
+        const address = '{{ user.profile.address|default:"" }}';
+        const selectedDelivery = document.querySelector('input[name="delivery"]:checked').value;
+        
+        let hasErrors = false;
+        
+        // Проверка телефона для курьерской доставки
+        if (selectedDelivery === 'courier' && !phone) {
+            showError('Для курьерской доставки необходимо указать номер телефона в профиле');
+            hasErrors = true;
+        }
+        
+        // Проверка адреса для курьерской доставки
+        if (selectedDelivery === 'courier' && !address) {
+            showError('Для курьерской доставки необходимо указать адрес доставки в профиле');
+            hasErrors = true;
+        }
+        
+        if (hasErrors) {
+            e.preventDefault();
+            
+            // Показываем кнопку "Изменить данные"
+            const editLink = document.querySelector('.edit-link');
+            editLink.style.color = '#ef4444';
+            editLink.style.fontWeight = '600';
+            
+            // Анимация при ошибке
+            confirmBtn.classList.add('shake');
+            setTimeout(() => confirmBtn.classList.remove('shake'), 500);
+            
+            return;
+        }
+        
+        // Показываем состояние загрузки
+        confirmBtn.classList.add('loading');
+        confirmBtn.disabled = true;
+    });
+    
+    function showError(message) {
+        // Создаем или обновляем сообщение об ошибке
+        let errorDiv = document.querySelector('.order-error');
+        if (!errorDiv) {
+            errorDiv = document.createElement('div');
+            errorDiv.className = 'order-error';
+            orderForm.insertBefore(errorDiv, confirmBtn);
+        }
+        
+        errorDiv.innerHTML = `
+            <div class="error-message">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 16A8 8 0 108 0a8 8 0 000 16zM7 5a1 1 0 112 0v4a1 1 0 11-2 0V5zm1 7a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+                </svg>
+                ${message}
+            </div>
+        `;
+        
+        // Автоматически скрываем через 5 секунд
+        setTimeout(() => {
+            errorDiv.remove();
+        }, 5000);
+    }
+    
+    // Анимация появления элементов
+    function animateElements() {
+        const cards = document.querySelectorAll('.checkout-card');
+        cards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                card.style.transition = 'all 0.6s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+        
+        const orderSummary = document.querySelector('.order-summary');
+        orderSummary.style.opacity = '0';
+        orderSummary.style.transform = 'scale(0.95)';
+        
+        setTimeout(() => {
+            orderSummary.style.transition = 'all 0.6s ease';
+            orderSummary.style.opacity = '1';
+            orderSummary.style.transform = 'scale(1)';
+        }, 600);
+    }
+    
+    // Инициализация
+    updateTotals();
+    animateElements();
+    
+    // Добавляем стили для ошибок
+    const errorStyles = document.createElement('style');
+    errorStyles.textContent = `
+        .order-error {
+            margin-bottom: 1rem;
+        }
+        
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    `;
+    document.head.appendChild(errorStyles);
+});
+
+// Функция для показа уведомления о успешном заказе (можно использовать в created.html)
+function showOrderSuccess(orderId) {
+    const successHTML = `
+        <div class="order-success-overlay">
+            <div class="order-success-modal">
+                <div class="success-icon">🎉</div>
+                <h2>Заказ успешно оформлен!</h2>
+                <p>Номер вашего заказа: <strong>#${orderId}</strong></p>
+                <p>Мы отправили подтверждение на вашу электронную почту</p>
+                <div class="success-actions">
+                    <a href="{% url 'core:home' %}" class="btn btn--outline">На главную</a>
+                    <a href="{% url 'accounts:profile' %}" class="btn btn--primary">Отслеживать заказ</a>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', successHTML);
+    
+    // Стили для модального окна успеха
+    const successStyles = document.createElement('style');
+    successStyles.textContent = `
+        .order-success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .order-success-modal {
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: scaleIn 0.3s ease;
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .order-success-modal h2 {
+            color: #10b981;
+            margin-bottom: 1rem;
+        }
+        
+        .order-success-modal p {
+            color: #6b7280;
+            margin-bottom: 0.5rem;
+        }
+        
+        .success-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: center;
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(successStyles);
+}
+</script>
 {% endblock %}
