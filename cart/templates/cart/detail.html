@@ -1,34 +1,873 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}Корзина - FilamentStore{% endblock %}
+{% block meta_description %}Ваша корзина покупок в FilamentStore. Просмотрите выбранные товары, измените количество и перейдите к оформлению заказа.{% endblock %}
+
 {% block content %}
-<h2>Корзина</h2>
-<table class="table">
-  <thead>
-    <tr>
-      <th>Товар</th>
-      <th>Цена</th>
-      <th>Количество</th>
-      <th>Сумма</th>
-      <th></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for item in cart %}
-      <tr>
-        <td>{{ item.filament.brand }} {{ item.filament.material }} ({{ item.filament.color }})</td>
-        <td>{{ item.price }} ₽</td>
-        <td>{{ item.quantity }}</td>
-        <td>{{ item.total_price }} ₽</td>
-        <td>
-          <a href="{% url 'cart:remove' item.filament.id %}" class="btn btn-danger btn-sm">Удалить</a>
-        </td>
-      </tr>
-    {% empty %}
-      <tr><td colspan="5">Корзина пуста</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
+<div class="cart-page">
+    <div class="container">
+        <!-- Хлебные крошки -->
+        <nav class="breadcrumb">
+            <a href="{% url 'core:home' %}" class="breadcrumb__link">Главная</a>
+            <span class="breadcrumb__separator">/</span>
+            <a href="{% url 'catalog:list' %}" class="breadcrumb__link">Каталог</a>
+            <span class="breadcrumb__separator">/</span>
+            <span class="breadcrumb__current">Корзина</span>
+        </nav>
 
-<h4>Итого: {{ cart.get_total_price }} ₽</h4>
+        <div class="cart-header">
+            <h1 class="cart-title">Корзина покупок</h1>
+            <p class="cart-subtitle">Проверьте ваш заказ перед оформлением</p>
+        </div>
 
-<a href="#" class="btn btn-success">Оформить заказ</a>
+        <div class="cart-layout">
+            <!-- Основное содержимое корзины -->
+            <div class="cart-main">
+                {% if cart %}
+                <div class="cart-items">
+                    {% for item in cart %}
+                    <div class="cart-item" data-item-id="{{ item.filament.id }}">
+                        <div class="item-image">
+                            {% if item.filament.image %}
+                            <img src="{{ item.filament.image.url }}" alt="{{ item.filament.brand }} {{ item.filament.material }}" loading="lazy">
+                            {% else %}
+                            <div class="item-image-placeholder">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                </svg>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="item-details">
+                            <h3 class="item-name">{{ item.filament.brand }} {{ item.filament.material }}</h3>
+                            <div class="item-meta">
+                                <span class="item-color">
+                                    <span class="color-sample" style="background-color: {{ item.filament.color_hex|default:'#666' }};"></span>
+                                    {{ item.filament.color }}
+                                </span>
+                                <span class="item-diameter">Диаметр: {{ item.filament.diameter }} мм</span>
+                            </div>
+                            <div class="item-price-mobile">
+                                <span class="price">{{ item.total_price }} ₽</span>
+                            </div>
+                        </div>
+
+                        <div class="item-quantity">
+                            <div class="quantity-controls">
+                                <button type="button" class="quantity-btn" data-action="decrease" data-product-id="{{ item.filament.id }}">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                        <path d="M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z"/>
+                                    </svg>
+                                </button>
+                                <input type="number" class="quantity-input" value="{{ item.quantity }}" min="1" max="99" data-product-id="{{ item.filament.id }}">
+                                <button type="button" class="quantity-btn" data-action="increase" data-product-id="{{ item.filament.id }}">
+                                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="quantity-actions">
+                                <button type="button" class="btn-update" data-product-id="{{ item.filament.id }}">Обновить</button>
+                            </div>
+                        </div>
+
+                        <div class="item-price">
+                            <div class="price-main">{{ item.total_price }} ₽</div>
+                            <div class="price-unit">{{ item.price }} ₽/шт</div>
+                        </div>
+
+                        <div class="item-actions">
+                            <a href="{% url 'cart:remove' item.filament.id %}" class="btn-remove" data-product-id="{{ item.filament.id }}">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Рекомендуемые товары -->
+                <div class="recommended-section">
+                    <h3 class="section-title">С этим товаром также покупают</h3>
+                    <div class="recommended-products">
+                        <!-- Здесь можно добавить рекомендуемые товары -->
+                        <div class="recommended-placeholder">
+                            <p>Рекомендуемые товары появятся здесь</p>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Пустая корзина -->
+                <div class="empty-cart">
+                    <div class="empty-icon">🛒</div>
+                    <h2 class="empty-title">Ваша корзина пуста</h2>
+                    <p class="empty-text">Добавьте товары из каталога, чтобы сделать заказ</p>
+                    <div class="empty-actions">
+                        <a href="{% url 'catalog:list' %}" class="btn btn--primary btn--large">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
+                            </svg>
+                            Перейти в каталог
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Боковая панель с итогами -->
+            {% if cart %}
+            <aside class="cart-sidebar">
+                <div class="order-summary">
+                    <div class="summary-header">
+                        <h3 class="summary-title">Итоги заказа</h3>
+                    </div>
+
+                    <div class="summary-items">
+                        <div class="summary-row">
+                            <span class="summary-label">Товары ({{ cart|length }})</span>
+                            <span class="summary-value">{{ cart.get_total_price }} ₽</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Доставка</span>
+                            <span class="summary-value">Рассчитывается при оформлении</span>
+                        </div>
+                        {% if cart.get_total_price > 5000 %}
+                        <div class="summary-row discount">
+                            <span class="summary-label">Скидка 10%</span>
+                            <span class="summary-value">-{{ cart.get_discount }} ₽</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="summary-total">
+                        <div class="total-row">
+                            <span class="total-label">Итого</span>
+                            <span class="total-value">{{ cart.get_final_total }} ₽</span>
+                        </div>
+                    </div>
+
+                    <div class="summary-actions">
+                        <a href="{% url 'cart:create' %}" class="btn btn--primary btn--large btn--full checkout-btn">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                            </svg>
+                            Перейти к оформлению
+                        </a>
+                        
+                        <a href="{% url 'catalog:list' %}" class="btn btn--outline btn--full">
+                            Продолжить покупки
+                        </a>
+                    </div>
+
+                    <div class="summary-features">
+                        <div class="feature-item">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 0a8 8 0 100 16A8 8 0 008 0zM5 8a1 1 0 000 2h6a1 1 0 100-2H5z" clip-rule="evenodd"/>
+                            </svg>
+                            Бесплатная доставка от 3000₽
+                        </div>
+                        <div class="feature-item">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 0a8 8 0 100 16A8 8 0 008 0zM5 8a1 1 0 000 2h6a1 1 0 100-2H5z" clip-rule="evenodd"/>
+                            </svg>
+                            Возврат в течение 14 дней
+                        </div>
+                        <div class="feature-item">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 0a8 8 0 100 16A8 8 0 008 0zM5 8a1 1 0 000 2h6a1 1 0 100-2H5z" clip-rule="evenodd"/>
+                            </svg>
+                            Гарантия качества
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.cart-page {
+    padding: 2rem 0;
+    min-height: 70vh;
+    background: #f8fafc;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.breadcrumb__link {
+    color: #6366f1;
+    text-decoration: none;
+}
+
+.breadcrumb__link:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb__separator {
+    color: #d1d5db;
+}
+
+.breadcrumb__current {
+    color: #374151;
+    font-weight: 500;
+}
+
+.cart-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.cart-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.cart-subtitle {
+    font-size: 1.125rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+.cart-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+@media (min-width: 1024px) {
+    .cart-layout {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+/* Cart Items */
+.cart-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.cart-item {
+    display: grid;
+    grid-template-columns: 80px 1fr auto auto;
+    gap: 1.5rem;
+    align-items: center;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e5e7eb;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.cart-item:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .cart-item {
+        grid-template-columns: 60px 1fr;
+        gap: 1rem;
+    }
+    
+    .item-quantity,
+    .item-price,
+    .item-actions {
+        grid-column: 1 / -1;
+        justify-self: start;
+    }
+}
+
+/* Item Image */
+.item-image {
+    width: 80px;
+    height: 80px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #f9fafb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.item-image-placeholder {
+    color: #d1d5db;
+}
+
+/* Item Details */
+.item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.item-name {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.item-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.item-color,
+.item-diameter {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.color-sample {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid #e5e7eb;
+}
+
+.item-price-mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .item-price-mobile {
+        display: block;
+        margin-top: 0.5rem;
+    }
+    
+    .item-price {
+        display: none;
+    }
+}
+
+/* Quantity Controls */
+.item-quantity {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+
+.quantity-btn {
+    background: none;
+    border: none;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    color: #6b7280;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity-btn:hover {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.quantity-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.quantity-btn:disabled:hover {
+    background: none;
+    color: #6b7280;
+}
+
+.quantity-input {
+    width: 50px;
+    border: none;
+    text-align: center;
+    font-weight: 600;
+    padding: 0.5rem 0;
+    background: white;
+    font-size: 0.875rem;
+}
+
+.quantity-input:focus {
+    outline: none;
+    background: #f8fafc;
+}
+
+.quantity-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.btn-update {
+    background: none;
+    border: none;
+    color: #6366f1;
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.btn-update:hover {
+    background: #f0f9ff;
+}
+
+/* Item Price */
+.item-price {
+    text-align: right;
+}
+
+.price-main {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.price-unit {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* Item Actions */
+.item-actions {
+    display: flex;
+    align-items: center;
+}
+
+.btn-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: none;
+    color: #6b7280;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-remove:hover {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+/* Empty Cart */
+.empty-cart {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+}
+
+.empty-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+}
+
+.empty-text {
+    color: #6b7280;
+    margin-bottom: 2rem;
+}
+
+.empty-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* Recommended Section */
+.recommended-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e5e7eb;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.recommended-placeholder {
+    text-align: center;
+    padding: 2rem;
+    background: #f9fafb;
+    border-radius: 8px;
+    color: #6b7280;
+}
+
+/* Order Summary */
+.cart-sidebar {
+    position: sticky;
+    top: 2rem;
+}
+
+.order-summary {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+}
+
+.summary-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f9fafb;
+}
+
+.summary-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.summary-items {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.summary-label {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.summary-value {
+    font-weight: 500;
+    color: #1f2937;
+}
+
+.summary-row.discount {
+    color: #10b981;
+}
+
+.summary-row.discount .summary-value {
+    color: #10b981;
+}
+
+.summary-total {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.total-label {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.total-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #6366f1;
+}
+
+.summary-actions {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.summary-features {
+    padding: 1rem 1.5rem;
+    background: #f9fafb;
+    border-top: 1px solid #e5e7eb;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: #6b7280;
+    padding: 0.25rem 0;
+}
+
+.feature-item svg {
+    color: #10b981;
+    flex-shrink: 0;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.btn--primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+.btn--outline {
+    background: transparent;
+    color: #6366f1;
+    border: 2px solid #6366f1;
+}
+
+.btn--outline:hover {
+    background: #6366f1;
+    color: white;
+}
+
+.btn--large {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+}
+
+.btn--full {
+    width: 100%;
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.cart-item {
+    animation: slideIn 0.5s ease forwards;
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cart-header {
+        margin-bottom: 2rem;
+    }
+    
+    .cart-title {
+        font-size: 2rem;
+    }
+    
+    .empty-actions {
+        flex-direction: column;
+    }
+    
+    .cart-sidebar {
+        position: static;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработчики для управления количеством
+    const quantityBtns = document.querySelectorAll('.quantity-btn');
+    const quantityInputs = document.querySelectorAll('.quantity-input');
+    const updateBtns = document.querySelectorAll('.btn-update');
+    const removeBtns = document.querySelectorAll('.btn-remove');
+
+    // Изменение количества
+    quantityBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const action = this.dataset.action;
+            const productId = this.dataset.productId;
+            const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+            let quantity = parseInt(input.value);
+            const max = parseInt(input.max);
+            const min = parseInt(input.min);
+
+            if (action === 'increase' && quantity < max) {
+                input.value = quantity + 1;
+            } else if (action === 'decrease' && quantity > min) {
+                input.value = quantity - 1;
+            }
+
+            // Показываем кнопку обновления
+            const updateBtn = document.querySelector(`.btn-update[data-product-id="${productId}"]`);
+            updateBtn.style.display = 'block';
+        });
+    });
+
+    // Ручное изменение количества
+    quantityInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const productId = this.dataset.productId;
+            const updateBtn = document.querySelector(`.btn-update[data-product-id="${productId}"]`);
+            updateBtn.style.display = 'block';
+        });
+    });
+
+    // Обновление количества через AJAX
+    updateBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const productId = this.dataset.productId;
+            const input = document.querySelector(`.quantity-input[data-product-id="${productId}"]`);
+            const quantity = input.value;
+            const cartItem = input.closest('.cart-item');
+
+            // Показываем состояние загрузки
+            this.classList.add('loading');
+            cartItem.classList.add('loading');
+
+            // Здесь должен быть AJAX запрос к серверу
+            setTimeout(() => {
+                this.classList.remove('loading');
+                cartItem.classList.remove('loading');
+                this.style.display = 'none';
+                
+                // Обновляем интерфейс (в реальном приложении - по ответу сервера)
+                updateCartTotals();
+            }, 1000);
+        });
+    });
+
+    // Удаление товара
+    removeBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const productId = this.dataset.productId;
+            const cartItem = this.closest('.cart-item');
+
+            if (confirm('Вы уверены, что хотите удалить товар из корзины?')) {
+                cartItem.classList.add('loading');
+
+                // Здесь должен быть AJAX запрос к серверу
+                setTimeout(() => {
+                    cartItem.style.opacity = '0';
+                    cartItem.style.transform = 'translateX(100%)';
+                    
+                    setTimeout(() => {
+                        cartItem.remove();
+                        updateCartTotals();
+                        
+                        // Если корзина пуста, перезагружаем страницу
+                        if (document.querySelectorAll('.cart-item').length === 0) {
+                            location.reload();
+                        }
+                    }, 300);
+                }, 500);
+            }
+        });
+    });
+
+    // Обновление итогов (заглушка)
+    function updateCartTotals() {
+        // В реальном приложении здесь должен быть AJAX запрос
+        console.log('Cart totals updated');
+    }
+
+    // Анимация появления элементов
+    function animateCartItems() {
+        const cartItems = document.querySelectorAll('.cart-item');
+        cartItems.forEach((item, index) => {
+            item.style.animationDelay = `${index * 0.1}s`;
+        });
+    }
+
+    // Инициализация
+    animateCartItems();
+});
+</script>
 {% endblock %}
