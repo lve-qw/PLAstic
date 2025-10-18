@@ -8,6 +8,8 @@ from django.contrib.auth import logout
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import ProfileUpdateForm, DeviceForm
 from .models import Device
+from orders.models import Order
+from devices.models import DeviceFilamentLevel
 
 class RegisterView(CreateView):
     """Регистрация пользователя"""
@@ -46,6 +48,7 @@ def profile_view(request):
                 return redirect("accounts:profile")
 
     devices = request.user.devices.all()
+    orders = Order.objects.filter(user_id=request.user.id)
     return render(
         request,
         "accounts/profile.html",
@@ -53,6 +56,7 @@ def profile_view(request):
             "profile_form": profile_form,
             "device_form": device_form,
             "devices": devices,
+            "orders": orders
         },
     )
     
