@@ -1,0 +1,115 @@
+.header {
+  background: linear-gradient(135deg, $dark-color 0%, $dark-light 100%);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: $shadow-md;
+}
+
+.nav {
+  @include flex-between;
+  padding: $spacing-md 0;
+  position: relative;
+
+  &__logo {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: white;
+
+    &-text {
+      background: linear-gradient(45deg, $primary-color, $secondary-color);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  }
+
+  &__menu {
+    @include flex-between;
+    gap: $spacing-xl;
+
+    @include respond-to(md) {
+      gap: $spacing-lg;
+    }
+  }
+
+  &__item {
+    position: relative;
+  }
+
+  &__link {
+    color: $gray-light;
+    font-weight: $font-weight-medium;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius-md;
+    transition: all 0.3s ease;
+    position: relative;
+
+    &:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    &--button {
+      background: $primary-color;
+      color: white;
+      border-radius: $border-radius-lg;
+      padding: $spacing-sm $spacing-lg;
+
+      &:hover {
+        background: $primary-dark;
+        transform: translateY(-1px);
+        box-shadow: $shadow-md;
+      }
+    }
+  }
+
+  &__toggle {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    padding: $spacing-sm;
+
+    @include respond-to(md) {
+      display: none;
+    }
+
+    &-bar {
+      width: 25px;
+      height: 3px;
+      background: white;
+      margin: 2px 0;
+      transition: 0.3s;
+      border-radius: 2px;
+    }
+  }
+
+  // Мобильное меню
+  @include respond-to(md) {
+    &__toggle {
+      display: flex;
+    }
+
+    &__menu {
+      position: fixed;
+      top: 100%;
+      left: 0;
+      width: 100%;
+      background: $dark-color;
+      flex-direction: column;
+      padding: $spacing-xl;
+      box-shadow: $shadow-lg;
+      transform: translateY(-100%);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+
+      &.active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+  }
+}

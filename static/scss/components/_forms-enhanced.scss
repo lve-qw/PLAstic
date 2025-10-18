@@ -1,0 +1,300 @@
+// Улучшенные стили для форм
+.form {
+    &__input-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    &__required {
+        color: $error-color;
+        margin-left: 2px;
+    }
+
+    &__help-icon {
+        position: absolute;
+        right: $spacing-lg;
+        color: $gray-color;
+        cursor: help;
+        transition: color 0.3s ease;
+
+        &:hover {
+            color: $primary-color;
+        }
+
+        &[data-tooltip] {
+            position: relative;
+
+            &::before {
+                content: attr(data-tooltip);
+                position: absolute;
+                bottom: 100%;
+                right: 50%;
+                transform: translateX(50%);
+                background: $dark-color;
+                color: white;
+                padding: $spacing-sm $spacing-md;
+                border-radius: $border-radius-md;
+                font-size: $font-size-sm;
+                white-space: nowrap;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+                z-index: 1000;
+                box-shadow: $shadow-md;
+            }
+
+            &::after {
+                content: '';
+                position: absolute;
+                bottom: calc(100% - 5px);
+                right: 50%;
+                transform: translateX(50%);
+                border: 5px solid transparent;
+                border-top-color: $dark-color;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.3s ease;
+            }
+
+            &:hover::before,
+            &:hover::after {
+                opacity: 1;
+                visibility: visible;
+                bottom: calc(100% + 5px);
+            }
+
+            &:hover::after {
+                bottom: calc(100%);
+            }
+        }
+    }
+
+    &__link {
+        color: $primary-color;
+        font-weight: $font-weight-medium;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+
+        &:hover {
+            color: $primary-dark;
+        }
+    }
+
+    &__checkbox {
+        display: flex;
+        align-items: flex-start;
+        gap: $spacing-sm;
+        cursor: pointer;
+        font-size: $font-size-sm;
+        line-height: 1.4;
+
+        input[type="checkbox"] {
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        &-text {
+            color: $gray-color;
+        }
+    }
+
+    &__password-toggle {
+        position: absolute;
+        right: $spacing-lg;
+        background: none;
+        border: none;
+        color: $gray-color;
+        cursor: pointer;
+        padding: $spacing-xs;
+        border-radius: $border-radius-sm;
+        transition: all 0.3s ease;
+
+        &:hover {
+            color: $primary-color;
+            background: rgba($primary-color, 0.1);
+        }
+
+        svg {
+            width: 18px;
+            height: 18px;
+        }
+    }
+}
+
+// Улучшенный auth-form
+.auth-form {
+    max-width: 440px;
+    margin: 0 auto;
+    padding: $spacing-2xl;
+    background: white;
+    border-radius: $border-radius-xl;
+    box-shadow: $shadow-lg;
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, $primary-color, $secondary-color);
+    }
+
+    &__header {
+        text-align: center;
+        margin-bottom: $spacing-2xl;
+    }
+
+    &__title {
+        font-size: $font-size-2xl;
+        font-weight: $font-weight-bold;
+        color: $dark-color;
+        margin-bottom: $spacing-sm;
+    }
+
+    &__subtitle {
+        color: $gray-color;
+        font-size: $font-size-base;
+        line-height: 1.5;
+    }
+
+    &__footer {
+        text-align: center;
+        margin-top: $spacing-xl;
+        padding-top: $spacing-lg;
+        border-top: 1px solid $gray-light;
+        color: $gray-color;
+        font-size: $font-size-sm;
+    }
+
+    &__link {
+        color: $primary-color;
+        font-weight: $font-weight-medium;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    // Варианты для разных типов форм
+    &--compact {
+        max-width: 380px;
+        padding: $spacing-xl;
+    }
+
+    &--wide {
+        max-width: 500px;
+    }
+}
+
+// Состояния кнопок
+.btn {
+    position: relative;
+
+    &__text {
+        transition: opacity 0.3s ease;
+    }
+
+    &__loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    &--large {
+        padding: $spacing-lg $spacing-xl;
+        font-size: $font-size-lg;
+    }
+
+    // Состояние загрузки
+    &.btn--loading {
+        .btn__text {
+            opacity: 0;
+        }
+
+        .btn__loader {
+            opacity: 1;
+        }
+    }
+
+    // Состояние успеха
+    &--success {
+        background: linear-gradient(135deg, $success-color, darken($success-color, 10%));
+
+        &:hover {
+            background: linear-gradient(135deg, darken($success-color, 5%), darken($success-color, 15%));
+        }
+    }
+}
+
+// Progress indicator for multi-step forms
+.form-progress {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: $spacing-2xl;
+    position: relative;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: $gray-light;
+        transform: translateY(-50%);
+        z-index: 1;
+    }
+
+    &__step {
+        position: relative;
+        z-index: 2;
+        background: white;
+        padding: 0 $spacing-sm;
+    }
+
+    &__indicator {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: $gray-light;
+        color: $gray-color;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: $font-size-sm;
+        font-weight: $font-weight-semibold;
+        margin: 0 auto $spacing-xs;
+        transition: all 0.3s ease;
+    }
+
+    &__label {
+        font-size: $font-size-xs;
+        color: $gray-color;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    &__step--active &__indicator {
+        background: $primary-color;
+        color: white;
+        box-shadow: 0 0 0 4px rgba($primary-color, 0.2);
+    }
+
+    &__step--active &__label {
+        color: $primary-color;
+        font-weight: $font-weight-medium;
+    }
+
+    &__step--completed &__indicator {
+        background: $success-color;
+        color: white;
+    }
+}

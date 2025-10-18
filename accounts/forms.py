@@ -6,9 +6,9 @@ from .models import UserProfile
 from .models import Device
 
 class RegisterForm(UserCreationForm):
-    email = forms.EmailField(required=True)
-    phone = forms.CharField(required=True)
-    address = forms.CharField(widget=forms.Textarea, required=True)
+    email = forms.EmailField(required=True )
+    phone = forms.CharField(required=True, label="Телефон")
+    address = forms.CharField(widget=forms.Textarea, required=True, label="Адрес")
 
     class Meta:
         model = User

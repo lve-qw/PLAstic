@@ -1,39 +1,262 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="h-100">
+{% load static %}
 <head>
-  <meta charset="UTF-8">
-  <title>Магазин филаментов</title>
-  <!-- Подключение Bootstrap CSS через CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Наши стили (если нужно что-то поверх Bootstrap) -->
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}&#x1F33F;PLAplastic - Магазин филаментов для 3D-печати{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/main.css">
+    
+    <!-- Meta tags -->
+    <meta name="description" content="{% block meta_description %}Качественные филаменты для 3D-печати. Широкий выбор материалов и цветов. Быстрая доставка.{% endblock %}">
+    <!-- В секции head -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% block extra_head %}{% endblock %}
 </head>
-<body>
-  <header class="bg-dark text-white p-3 mb-4">
-    <div class="container">
-      <nav class="nav">
-        <a class="nav-link text-white" href="{% url 'core:home' %}">Главная</a>
-        <a class="nav-link text-white" href="{% url 'catalog:list' %}">Каталог</a>
-        {% if user.is_authenticated %}
-          <a class="nav-link text-white" href="{% url 'accounts:profile' %}">Личный кабинет</a>
-          <a class="nav-link text-white" href="{% url 'accounts:logout' %}">Выход</a>
-        {% else %}
-          <a class="nav-link text-white" href="{% url 'accounts:login' %}">Вход</a>
-          <a class="nav-link text-white" href="{% url 'accounts:register' %}">Регистрация</a>
-        {% endif %}
-      </nav>
-    </div>
-  </header>
+<body class="d-flex flex-column h-100">
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <a class="nav__logo" href="{% url 'core:home' %}">
+                <span class="nav__logo-text">PLAplastic</span>
+            </a>
+            
+            <ul class="nav__menu" id="nav-menu">
+                <li class="nav__item">
+                    <a href="{% url 'core:home' %}" class="nav__link">Главная</a>
+                </li>
+                <li class="nav__item">
+                    <a href="{% url 'catalog:list' %}" class="nav__link">Каталог</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav__item">
+                    <a href="{% url 'accounts:profile' %}" class="nav__link">Профиль</a>
+                </li>
+                <li class="nav__item">
+                    <a href="{% url 'accounts:logout' %}" class="nav__link nav__link--button">Выход</a>
+                </li>
+                <li class="nav__item">
+                    <a href="{% url 'cart:detail' %}" class="nav__link">&#128722;</a>
+                </li>
+                {% else %}
+                <li class="nav__item">
+                    <a href="{% url 'accounts:login' %}" class="nav__link">Вход</a>
+                </li>
+                <li class="nav__item">
+                    <a href="{% url 'accounts:register' %}" class="nav__link nav__link--button">Регистрация</a>
+                </li>
+                {% endif %}
+            </ul>
 
-  <main class="container">
-    {% block content %}{% endblock %}
-  </main>
+            <!-- Mobile menu toggle -->
+            <div class="nav__toggle" id="nav-toggle">
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+            </div>
+        </nav>
+    </header>
 
-  <footer class="bg-light text-center py-3 mt-4">
-    <p>&copy; 2025 Магазин филаментов</p>
-  </footer>
+    <!-- Main Content -->
+    <main class="main flex-grow-1">
+        {% block messages %}
+            {% if messages %}
+            <div class="messages container">
+                {% for message in messages %}
+                <div class="alert alert--{{ message.tags }}">
+                    <span class="alert__message">{{ message }}</span>
+                    <button class="alert__close" type="button">&times;</button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endblock %}
 
-  <!-- Подключение Bootstrap JS (для компонентов, если понадобятся) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        {% block content %}
+        <!-- Content will be injected here by child templates -->
+        {% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <div class="footer__section">
+                    <h3 class="footer__title">PLAplastic</h3>
+                    <p class="footer__text">Лучшие ECO материалы для 3D-печати</p>
+                </div>
+                
+                <div class="footer__section">
+                    <h4 class="footer__subtitle">Навигация</h4>
+                    <ul class="footer__links">
+                        <li><a href="{% url 'core:home' %}" class="footer__link">Главная</a></li>
+                        <li><a href="{% url 'catalog:list' %}" class="footer__link">Каталог</a></li>
+                        <li><a href="#" class="footer__link">О нас</a></li>
+                        <li><a href="#" class="footer__link">Контакты</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer__section">
+                    <h4 class="footer__subtitle">Аккаунт</h4>
+                    <ul class="footer__links">
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'accounts:profile' %}" class="footer__link">Профиль</a></li>
+                        <li><a href="{% url 'accounts:logout' %}" class="footer__link">Выход</a></li>
+                        {% else %}
+                        <li><a href="{% url 'accounts:login' %}" class="footer__link">Вход</a></li>
+                        <li><a href="{% url 'accounts:register' %}" class="footer__link">Регистрация</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer__bottom">
+                <p class="footer__copyright">&#128273; 2025 КЛЮЧ.</p>
+            </div>
+        </div>
+    </footer>
+    <style>
+        /* Базовые стили для иконок корзины */
+        .cart-icon {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .cart-icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* Стили для минималистичной иконки */
+        .cart-icon--minimal {
+            stroke: #6b7280;
+        }
+
+        .cart-icon--minimal:hover {
+            stroke: #374151;
+        }
+
+        /* Стили для заполненной иконки */
+        .cart-icon--filled {
+            color: #374151;
+        }
+
+        .cart-icon--filled:hover {
+            color: #6366f1;
+        }
+
+        /* Стили для современной иконки */
+        .cart-icon--modern {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .cart-icon--modern:hover {
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+        }
+
+        /* Стили для аутлайн иконки */
+        .cart-icon--outline {
+            stroke: #9ca3af;
+        }
+
+        .cart-icon--outline:hover {
+            stroke: #6366f1;
+        }
+
+        /* Стили для стилизованной иконки */
+        .cart-icon--styled {
+            filter: drop-shadow(0 2px 4px rgba(99, 102, 241, 0.2));
+        }
+
+        .cart-icon--styled:hover {
+            filter: drop-shadow(0 4px 8px rgba(99, 102, 241, 0.3));
+        }
+
+        /* Индикатор количества товаров в корзине */
+        .cart-badge {
+            position: relative;
+            display: inline-block;
+        }
+
+        .cart-badge::after {
+            content: attr(data-count);
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+
+        /* Анимация добавления в корзину */
+        @keyframes cartBounce {
+            0%, 20%, 60%, 100% {
+                transform: scale(1);
+            }
+            40% {
+                transform: scale(1.2);
+            }
+            80% {
+                transform: scale(1.1);
+            }
+        }
+
+        .cart-animate {
+            animation: cartBounce 0.6s ease;
+        }
+
+        /* Размеры иконок */
+        .cart-icon--small {
+            width: 16px;
+            height: 16px;
+        }
+
+        .cart-icon--medium {
+            width: 24px;
+            height: 24px;
+        }
+
+        .cart-icon--large {
+            width: 32px;
+            height: 32px;
+        }
+
+        /* Цветовые варианты */
+        .cart-icon--primary {
+            color: #6366f1;
+            stroke: #6366f1;
+        }
+
+        .cart-icon--success {
+            color: #10b981;
+            stroke: #10b981;
+        }
+
+        .cart-icon--warning {
+            color: #f59e0b;
+            stroke: #f59e0b;
+        }
+
+        .cart-icon--danger {
+            color: #ef4444;
+            stroke: #ef4444;
+        }
+    </style>
+
+    <!-- В конце body -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>

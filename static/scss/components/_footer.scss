@@ -1,0 +1,70 @@
+.footer {
+  background: $dark-color;
+  color: $gray-light;
+  margin-top: auto;
+
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $spacing-2xl;
+    padding: $spacing-2xl 0;
+
+    @include respond-to(md) {
+      grid-template-columns: 2fr 1fr 1fr;
+    }
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  &__title {
+    font-size: $font-size-xl;
+    font-weight: $font-weight-bold;
+    color: white;
+    background: linear-gradient(45deg, $primary-color, $secondary-color);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  &__subtitle {
+    font-size: $font-size-lg;
+    font-weight: $font-weight-semibold;
+    color: white;
+    margin-bottom: $spacing-sm;
+  }
+
+  &__text {
+    line-height: 1.6;
+    color: $gray-color;
+  }
+
+  &__links {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-sm;
+  }
+
+  &__link {
+    color: $gray-color;
+    transition: color 0.3s ease;
+
+    &:hover {
+      color: $primary-color;
+    }
+  }
+
+  &__bottom {
+    border-top: 1px solid $dark-light;
+    padding: $spacing-lg 0;
+    text-align: center;
+  }
+
+  &__copyright {
+    color: $gray-color;
+    font-size: $font-size-sm;
+  }
+}

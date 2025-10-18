@@ -1,0 +1,76 @@
+.alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-md $spacing-lg;
+  border-radius: $border-radius-lg;
+  margin-bottom: $spacing-md;
+  animation: slideIn 0.3s ease;
+
+  &--success {
+    background: rgba($success-color, 0.1);
+    border: 1px solid $success-color;
+    color: darken($success-color, 20%);
+  }
+
+  &--error {
+    background: rgba($error-color, 0.1);
+    border: 1px solid $error-color;
+    color: darken($error-color, 20%);
+  }
+
+  &--warning {
+    background: rgba($warning-color, 0.1);
+    border: 1px solid $warning-color;
+    color: darken($warning-color, 20%);
+  }
+
+  &--info {
+    background: rgba($info-color, 0.1);
+    border: 1px solid $info-color;
+    color: darken($info-color, 20%);
+  }
+
+  &__message {
+    flex: 1;
+    font-weight: $font-weight-medium;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    font-size: $font-size-lg;
+    cursor: pointer;
+    padding: $spacing-xs;
+    margin-left: $spacing-md;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.messages {
+  position: fixed;
+  top: $spacing-xl;
+  right: $spacing-xl;
+  z-index: 1100;
+  max-width: 400px;
+
+  .alert {
+    margin-bottom: $spacing-md;
+  }
+}
