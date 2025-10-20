@@ -33,13 +33,12 @@ def user_logout(request):
 def profile_view(request):
     profile_form = ProfileUpdateForm(instance=request.user.profile)
     device_form = DeviceForm()
-
     if request.method == "POST":
         if "update_profile" in request.POST:
             profile_form = ProfileUpdateForm(request.POST, instance=request.user.profile)
             if profile_form.is_valid():
                 profile_form.save()
-        elif "add_device" in request.POST:
+        elif "device_id" in request.POST:
             device_form = DeviceForm(request.POST)
             if device_form.is_valid():
                 new_device = device_form.save(commit=False)
@@ -49,6 +48,8 @@ def profile_view(request):
 
     devices = request.user.devices.all()
     orders = Order.objects.filter(user_id=request.user.id)
+    
+    
     return render(
         request,
         "accounts/profile.html",

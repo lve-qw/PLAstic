@@ -11,7 +11,7 @@ urlpatterns = [
     path("catalog/", include("catalog.urls", namespace="catalog")),
     path("cart/", include("cart.urls", namespace="cart")),
     path("orders/", include("orders.urls", namespace="orders")),
-    # path('api/', include('api.urls')),
+    path('api/', include('api.urls')),
 ]
 
 if settings.DEBUG:

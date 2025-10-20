@@ -1,7 +1,714 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}Заказ подтвержден - PLAplastic{% endblock %}
+{% block meta_description %}Ваш заказ №{{ order.id }} успешно оформлен. Благодарим за покупку в PLAplastic!{% endblock %}
+
 {% block content %}
-<h2>Спасибо за заказ!</h2>
-<p>Ваш заказ №{{ order.id }} успешно оформлен.</p>
-<p>Мы свяжемся с вами по телефону или email.</p>
-<a href="{% url 'core:home' %}" class="btn btn-primary">На главную</a>
+<div class="order-success-page">
+    <div class="container">
+        <div class="success-container">
+            <!-- Анимированная иконка успеха -->
+            <div class="success-animation">
+                <div class="success-icon">
+                    <svg class="checkmark" width="80" height="80" viewBox="0 0 80 80" fill="none">
+                        <circle cx="40" cy="40" r="38" stroke="#10b981" stroke-width="4" class="circle"/>
+                        <path d="M25 40L35 50L55 30" stroke="#10b981" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" class="check"/>
+                    </svg>
+                    <div class="confetti">
+                        <div class="confetti-piece"></div>
+                        <div class="confetti-piece"></div>
+                        <div class="confetti-piece"></div>
+                        <div class="confetti-piece"></div>
+                        <div class="confetti-piece"></div>
+                        <div class="confetti-piece"></div>
+                        <div class="confetti-piece"></div>
+                        <div class="confetti-piece"></div>
+                        <div class="confetti-piece"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Основное сообщение -->
+            <div class="success-content">
+                <h1 class="success-title">Заказ подтвержден! 🎉</h1>
+                <p class="success-subtitle">Спасибо за ваш заказ в FilamentStore</p>
+                
+                <div class="order-details">
+                    <div class="order-card">
+                        <div class="order-header">
+                            <h3>Детали заказа</h3>
+                            <span class="order-badge">№{{ order.id }}</span>
+                        </div>
+                        <div class="order-info">
+                            <div class="info-row">
+                                <span class="info-label">Номер заказа:</span>
+                                <span class="info-value">#{{ order.id }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Дата оформления:</span>
+                                <span class="info-value">{{ order.created_at|date:"d.m.Y в H:i" }}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Статус:</span>
+                                <span class="info-value status-{{ order.status }}">{{ order.get_status_display }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Следующие шаги -->
+                <div class="next-steps">
+                    <h3 class="steps-title">Что дальше?</h3>
+                    <div class="steps-timeline">
+                        <div class="step">
+                            <div class="step-icon">📧</div>
+                            <div class="step-content">
+                                <h4>Подтверждение по email</h4>
+                                <p>Мы отправили детали заказа на вашу электронную почту</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-icon">📞</div>
+                            <div class="step-content">
+                                <h4>Подтверждение заказа</h4>
+                                <p>Наш менеджер свяжется с вами для подтверждения деталей заказа</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-icon">🚚</div>
+                            <div class="step-content">
+                                <h4>Доставка</h4>
+                                <p>Заказ будет доставлен в течение 1-3 рабочих дней</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Действия -->
+                <div class="success-actions">
+                    <a href="{% url 'core:home' %}" class="btn btn--primary btn--large">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+                        </svg>
+                        На главную
+                    </a>
+                    <a href="{% url 'accounts:profile' %}" class="btn btn--outline btn--large">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                        </svg>
+                        В личный кабинет
+                    </a>
+                    <a href="{% url 'catalog:list' %}" class="btn btn--outline btn--large">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/>
+                        </svg>
+                        Продолжить покупки
+                    </a>
+                </div>
+
+                <!-- Полезная информация -->
+                <div class="help-section">
+                    <div class="help-cards">
+                        <div class="help-card">
+                            <div class="help-icon">❓</div>
+                            <h4>Есть вопросы по заказу?</h4>
+                            <p>Наша служба поддержки готова помочь вам с любыми вопросами</p>
+                            <a href="tel:+78001234567" class="help-link">8 (800) 123-45-67</a>
+                        </div>
+                        <div class="help-card">
+                            <div class="help-icon">📦</div>
+                            <h4>Отслеживание заказа</h4>
+                            <p>Вы можете отслеживать статус вашего заказа в личном кабинете</p>
+                            <a href="{% url 'accounts:profile' %}" class="help-link">Перейти к отслеживанию</a>
+                        </div>
+                        <div class="help-card">
+                            <div class="help-icon">💡</div>
+                            <h4>Нужна помощь с выбором?</h4>
+                            <p>Наши эксперты помогут подобрать идеальные материалы для ваших проектов</p>
+                            <a href="{% url 'core:home' %}#consultation" class="help-link">Получить консультацию</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.order-success-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    padding: 2rem 0;
+}
+
+.success-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Анимация успеха */
+.success-animation {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.success-icon {
+    position: relative;
+    display: inline-block;
+}
+
+.checkmark .circle {
+    stroke-dasharray: 240;
+    stroke-dashoffset: 240;
+    animation: drawCircle 0.6s ease-in-out forwards;
+}
+
+.checkmark .check {
+    stroke-dasharray: 60;
+    stroke-dashoffset: 60;
+    animation: drawCheck 0.6s 0.6s ease-in-out forwards;
+}
+
+@keyframes drawCircle {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes drawCheck {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Конфетти */
+.confetti {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.confetti-piece {
+    position: absolute;
+    width: 8px;
+    height: 16px;
+    background: #f59e0b;
+    top: 0;
+    opacity: 0;
+    animation: confetti 2s ease-in-out forwards;
+}
+
+.confetti-piece:nth-child(1) {
+    left: 20%;
+    animation-delay: 1s;
+    background: #ef4444;
+}
+.confetti-piece:nth-child(2) {
+    left: 40%;
+    animation-delay: 1.2s;
+    background: #10b981;
+}
+.confetti-piece:nth-child(3) {
+    left: 60%;
+    animation-delay: 1.4s;
+    background: #3b82f6;
+}
+.confetti-piece:nth-child(4) {
+    left: 80%;
+    animation-delay: 1.6s;
+    background: #8b5cf6;
+}
+.confetti-piece:nth-child(5) {
+    left: 30%;
+    animation-delay: 1.8s;
+    background: #f59e0b;
+}
+.confetti-piece:nth-child(6) {
+    left: 50%;
+    animation-delay: 2s;
+    background: #ec4899;
+}
+.confetti-piece:nth-child(7) {
+    left: 70%;
+    animation-delay: 2.2s;
+    background: #6366f1;
+}
+.confetti-piece:nth-child(8) {
+    left: 25%;
+    animation-delay: 2.4s;
+    background: #84cc16;
+}
+.confetti-piece:nth-child(9) {
+    left: 75%;
+    animation-delay: 2.6s;
+    background: #f97316;
+}
+
+@keyframes confetti {
+    0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(100px) rotate(360deg);
+    }
+}
+
+/* Контент */
+.success-content {
+    text-align: center;
+}
+
+.success-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #10b981, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.success-subtitle {
+    font-size: 1.25rem;
+    color: #6b7280;
+    margin-bottom: 2rem;
+}
+
+/* Детали заказа */
+.order-details {
+    margin: 2rem 0;
+}
+
+.order-card {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid #e5e7eb;
+    text-align: left;
+}
+
+.order-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.order-header h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+.order-badge {
+    background: #6366f1;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.order-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+}
+
+.info-label {
+    color: #6b7280;
+    font-weight: 500;
+}
+
+.info-value {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.info-value.price {
+    color: #6366f1;
+    font-size: 1.125rem;
+}
+
+.status-pending { color: #f59e0b; }
+.status-processing { color: #3b82f6; }
+-status-confirmed { color: #10b981; }
+.status-shipped { color: #8b5cf6; }
+.status-delivered { color: #10b981; }
+.status-cancelled { color: #ef4444; }
+
+/* Следующие шаги */
+.next-steps {
+    margin: 3rem 0;
+    padding: 2rem 0;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.steps-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.steps-timeline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+}
+
+.step {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    text-align: left;
+}
+
+.step-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+}
+
+.step-content h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.step-content p {
+    color: #6b7280;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Действия */
+.success-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+/* Помощь */
+.help-section {
+    margin-top: 3rem;
+}
+
+.help-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.help-card {
+    background: #f8fafc;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.help-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.help-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.help-card h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.help-card p {
+    color: #6b7280;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.5;
+}
+
+.help-link {
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.help-link:hover {
+    text-decoration: underline;
+}
+
+/* Кнопки */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    text-decoration: none;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
+.btn--primary {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.btn--primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+.btn--outline {
+    background: transparent;
+    color: #6366f1;
+    border: 2px solid #6366f1;
+}
+
+.btn--outline:hover {
+    background: #6366f1;
+    color: white;
+}
+
+.btn--large {
+    padding: 1.125rem 2rem;
+    font-size: 1.125rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .success-container {
+        margin: 1rem;
+        padding: 2rem 1.5rem;
+    }
+    
+    .success-title {
+        font-size: 2rem;
+    }
+    
+    .success-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .success-actions .btn {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .steps-timeline {
+        grid-template-columns: 1fr;
+    }
+    
+    .help-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .order-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: flex-start;
+    }
+    
+    .info-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .success-container {
+        padding: 1.5rem 1rem;
+    }
+    
+    .success-title {
+        font-size: 1.75rem;
+    }
+    
+    .order-card {
+        padding: 1.5rem;
+    }
+    
+    .step {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Добавляем небольшую задержку для анимации
+    setTimeout(() => {
+        document.body.classList.add('loaded');
+    }, 100);
+
+    // Плавное появление элементов
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    // Наблюдаем за элементами для анимации появления
+    const animatedElements = document.querySelectorAll('.order-card, .step, .help-card');
+    animatedElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'all 0.6s ease';
+        observer.observe(el);
+    });
+
+    // Добавляем задержку для последовательного появления
+    animatedElements.forEach((el, index) => {
+        el.style.transitionDelay = `${index * 0.1}s`;
+    });
+
+    // Копирование номера заказа
+    const orderBadge = document.querySelector('.order-badge');
+    if (orderBadge) {
+        orderBadge.style.cursor = 'pointer';
+        orderBadge.title = 'Кликните чтобы скопировать номер заказа';
+        
+        orderBadge.addEventListener('click', function() {
+            const orderNumber = this.textContent.replace('№', '');
+            navigator.clipboard.writeText(orderNumber).then(() => {
+                const originalText = this.textContent;
+                this.textContent = 'Скопировано!';
+                this.style.background = '#10b981';
+                
+                setTimeout(() => {
+                    this.textContent = originalText;
+                    this.style.background = '#6366f1';
+                }, 2000);
+            });
+        });
+    }
+
+    // Показ уведомления о email отправке
+    setTimeout(() => {
+        const notification = document.createElement('div');
+        notification.className = 'email-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
+                </svg>
+                Письмо с деталями заказа отправлено на ваш email
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => {
+                notification.remove();
+            }, 300);
+        }, 5000);
+    }, 2000);
+});
+
+// Стили для уведомления
+const notificationStyles = document.createElement('style');
+notificationStyles.textContent = `
+    .email-notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        z-index: 1000;
+        transform: translateX(100%);
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+    
+    .email-notification.show {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    
+    .notification-content {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: #10b981;
+        font-weight: 500;
+    }
+    
+    @media (max-width: 768px) {
+        .email-notification {
+            top: 10px;
+            right: 10px;
+            left: 10px;
+            transform: translateY(-100%);
+        }
+        
+        .email-notification.show {
+            transform: translateY(0);
+        }
+    }
+`;
+document.head.appendChild(notificationStyles);
+</script>
 {% endblock %}
